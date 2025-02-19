@@ -50,18 +50,13 @@ sed -i "s|$Sudo_Line|%sudo ALL=(ALL:ALL) NOPASSWD:ALL|g" /etc/sudoers
 sed -i '/privilege specification/a\marvin     ALL=(ALL:ALL) NOPASSWD:ALL' /etc/sudoers
 
 # Configurate Bash Commands Line:
-find /home /root -name '.bashrc' -type f | xargs sed -i "/HISTSIZE=/c\HISTSIZE=-1"
-find /home /root -name '.bashrc' -type f | xargs sed -i "/HISTFILESIZE=/c\HISTFILESIZE=-1"
+find /home /root /etc/skel -name '.bashrc' -type f | xargs sed -i "/HISTSIZE=/c\HISTSIZE=-1"
+find /home /root /etc/skel -name '.bashrc' -type f | xargs sed -i "/HISTFILESIZE=/c\HISTFILESIZE=-1"
 
-echo -e "\n" >> /home/*/.bashrc
-echo alias ll="'ls -ahls --color=always'" >> /home/*/.bashrc
-echo alias l="'ls -ahls --color=always'" >> /home/*/.bashrc
-
-echo -e "\n" >> /root/.bashrc
-echo alias ll="'ls -ahls --color=always'" >> /root/.bashrc
-echo alias l="'ls -ahls --color=always'" >> /root/.bashrc
-
-echo -e "\nalias ll='ls -ahls --color=always'\nalias l='ls -ahls --color=always'" >> /etc/profile
+sed -i "s/#alias ll='ls -l'/alias ll='ls -ahls --color=always'/" /etc/skel/.bashrc
+sed -i "s/#alias l='ls -CF'/alias l='ls -ahls --color=always'/" /etc/skel/.bashrc
+sed -i "/# alias ll=/c\alias ll='ls -ahls --color=always'" /root/.bashrc
+sed -i "/# alias l=/c\alias l='ls -ahls --color=always'" /root/.bashrc
 
 # Vim and Vim.Tiny Configuration Customizing:
 cat <<-EOF >> /etc/vim/vimrc.tiny
