@@ -9,6 +9,7 @@ sed -i 's#http://deb.debian.org#http://mirrors.huaweicloud.com#g' /etc/apt/sourc
 #sed -i 's#http://security.debian.org/debian-security#http://mirrors.huaweicloud.com/debian-security#g' /etc/apt/sources.list
 apt update
 apt install -y linux-image-amd64/stable-backports linux-headers-amd64/stable-backports
+apt autoremove -y ; apt autoclean -y ; apt autopurge -y
 
 # Configurate GRUB to Enable Serial Port (console=ttyS0,115200 |console=tty0)
 # So the Copy and PasteCan be Available under xterm.js
