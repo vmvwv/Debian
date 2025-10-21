@@ -26,7 +26,7 @@ apt full-upgrade -y
 apt install -y bash-completion firewalld \
 gnome-core gnome-shell desktop-base \
 network-manager-gnome gnome-audio gnome-clocks gnome-shell-extension-prefs gnome-shell-extension-dashtodock gnome-keyring gnome-remote-desktop gnome-shell-extension-appindicator yaru-theme-gnome-shell gnome-shell-extension-desktop-icons-ng \
-policykit-1 policykit-1-gnome power-profiles-daemon fwupd-amd64-signed fwupd \
+power-profiles-daemon fwupd-amd64-signed fwupd \
 ssh sudo --no-install-recommends
 # Spare hardware driver:firmware-amd-graphics firmware-misc-nonfree firmware-linux-nonfree va-driver-all
 
