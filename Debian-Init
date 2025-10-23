@@ -23,7 +23,7 @@ sleep 3
 apt full-upgrade -y
 apt install -y bash-completion firewalld \
 gnome-core gnome-shell desktop-base \
-network-manager-gnome gnome-audio gnome-clocks gnome-shell-extension-user-theme gnome-shell-extension-system-monitor gnome-shell-extension-drive-menu gnome-shell-extension-places-menu gnome-shell-extension-prefs gnome-shell-extension-dashtodock gnome-keyring gnome-shell-extension-appindicator yaru-theme-gnome-shell gnome-shell-extension-desktop-icons-ng \
+network-manager-gnome gnome-audio gnome-clocks gnome-shell-extensions gnome-shell-extension-user-theme gnome-shell-extension-system-monitor gnome-shell-extension-drive-menu gnome-shell-extension-places-menu gnome-shell-extension-prefs gnome-shell-extension-dashtodock gnome-keyring gnome-shell-extension-appindicator yaru-theme-gnome-shell gnome-shell-extension-desktop-icons-ng \
 fwupd-amd64-signed fwupd \
 ssh sudo --no-install-recommends
 # Spare hardware driver:firmware-amd-graphics firmware-misc-nonfree firmware-linux-nonfree va-driver-all
