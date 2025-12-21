@@ -2,7 +2,7 @@
 # Customized Server Has Tailored by Marvin.W
 # Copyright (c) 2024 By Marvin.W
 
-set -e
+set -eu
 
 # Configurate Bash Commands Line:
 find /home /etc/skel -name '.bashrc' -type f | xargs sed -i "/HISTSIZE=/c\HISTSIZE=-1"
@@ -40,7 +40,7 @@ apt update
 apt upgrade -y
 
 # Inquiry the New Hostname:
-read -rp "Input the new hostname of server: " hostname && hostnamectl set-hostname "$hostname"
+read -rp "Input the new hostname of server: " hostname < /dev/tty && hostnamectl set-hostname "$hostname"
 
 rm -rf Server-Customize
 history -c
