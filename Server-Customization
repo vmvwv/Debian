@@ -1,0 +1,43 @@
+#!/bin/bash
+# Customized Server Has Tailored by Marvin.W
+# Copyright (c) 2024 By Marvin.W
+
+set -eu
+
+# Configurate Bash Commands Line:
+find /home /etc/skel -name '.bashrc' -type f | xargs sed -i "/HISTSIZE=/c\HISTSIZE=-1"
+find /home /etc/skel -name '.bashrc' -type f | xargs sed -i "/HISTFILESIZE=/c\HISTFILESIZE=-1"
+
+sed -i "s/#alias ll='ls -l'/alias ll='ls -ahls --color=always'/" /etc/skel/.bashrc
+sed -i "s/#alias l='ls -CF'/alias l='ls -ahls --color=always'/" /etc/skel/.bashrc
+sed -i "/# alias ll=/c\alias ll='ls -ahls --color=always'" /root/.bashrc
+sed -i "/# alias l=/c\alias l='ls -ahls --color=always'" /root/.bashrc
+
+# Login up a New User and Append to sudo Group:
+useradd -m vugs && echo "vugs:acdc7777" | chpasswd && usermod -aG sudo vugs && usermod -s /bin/bash vugs
+rm -rf /home/debian
+
+# Vim and Vim.Tiny Configuration Customizing:
+cat <<-EOF >> /etc/vim/vimrc.tiny
+"
+set nu ts=4 autoindent hlsearch incsearch showmode showcmd showmatch ignorecase smartcase hidden mouse=a paste nocompatible nobackup noswapfile cursorline ruler wrap linebreak laststatus=2
+hi cursorLine cterm=bold ctermbg=DarkGray ctermfg=NONE
+EOF
+
+cat <<-EOF >> /etc/vim/vimrc
+"
+set nu ts=4 autoindent hlsearch incsearch showmode showcmd showmatch ignorecase smartcase hidden mouse=a paste nocompatible nobackup noswapfile cursorline ruler wrap linebreak laststatus=2
+hi cursorLine cterm=bold ctermbg=DarkGray ctermfg=NONE
+EOF
+
+# Enable BBR as Algorithm of Flow Control:
+echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+sysctl -p
+
+# System Up to Date:
+apt update
+apt upgrade -y
+
+rm -rf Server-Customize
+history -c
