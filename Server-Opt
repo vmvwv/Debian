@@ -44,3 +44,4 @@ read -rp "Input the new hostname of server: " hostname && sudo hostnamectl set-h
 
 rm -rf Server-Customize
 history -c
+reboot
