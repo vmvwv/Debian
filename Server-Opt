@@ -38,6 +38,8 @@ sysctl -p
 # System Up to Date:
 apt update
 apt upgrade -y
+
+# Inquiry the New Hostname:
 read -rp "Input the new hostname of server: " hostname && sudo hostnamectl set-hostname "$hostname"
 
 rm -rf Server-Customize
