@@ -81,7 +81,7 @@ USER_NAME=($(ls -d /home/*/|cut -d/ -f3))
 
 sudo apt update
 sudo apt install -y --no-install-recommends systemd-timesyncd vim expect \
-gnome-keyring-pkcs11 im-config fcitx5 fcitx5-chinese-addons fcitx5-config-qt fcitx5-frontend-gtk4 fcitx5-frontend-gtk3 fcitx5-frontend-gtk2 fonts-wqy-microhei fonts-wqy-zenhei libxss1 xdg-utils
+gnome-keyring-pkcs11 im-config fcitx5 fcitx5-chinese-addons fcitx5-config-qt fcitx5-frontend-gtk4 fcitx5-frontend-gtk3 fcitx5-frontend-gtk2 fonts-wqy-microhei gnome-shell-extension-kimpanel fonts-wqy-zenhei libxss1 xdg-utils
 
 # Purge Obsoleted Kernels and Packages:
 sudo apt autopurge -y
@@ -98,7 +98,7 @@ cp -f /etc/skel/.bashrc ~/
 
 # Download and Configurate RealVNC (Firewall rule added and Disable Wayland)
 #LatestVer=$(wget -q -O - https://www.realvnc.com/en/connect/download/vnc/linux/ | grep -m 1 -oP "VNC-Server-[0-9].[0-9]{1,2}.[0-9]-Linux-x64.deb")
-#sudo apt install -y xfonts-wqy xorg xserver-xephyr
+sudo apt install -y gnome-xorg xorg xserver-xorg xserver-xorg-core gnome-session
 #wget -P $PWD/Downloads https://downloads.realvnc.com/download/file/vnc.files/${LatestVer}
 wget -P /tmp https://raw.githubusercontent.com/vmvwv/vnc/main/VNC.deb
 sudo apt install /tmp/VNC.deb
@@ -106,11 +106,25 @@ sudo firewall-cmd --zone=public --permanent --add-service=vncserver-x11-serviced
 sudo firewall-cmd --reload
 sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
 #sudo ufw allow 5900
-gdmconf="/etc/gdm3/daemon.conf"
-sudo sed -i 's/^#.*WaylandEnable=.*/WaylandEnable=false/' "$gdmconf"
 sudo systemctl enable vncserver-x11-serviced.service
 sudo systemctl enable vncserver-virtuald.service
 #sudo chkconfig --add vncserver-x11-serviced
+sudo tee /etc/gdm3/custom.conf > /dev/null <<EOF
+[daemon]
+WaylandEnable=false
+DefaultSession=gnome-xorg.desktop
 
+[security]
+
+[xdmcp]
+
+[greeter]
+
+[chooser]
+
+[debug]
+EOF
+sudo rm -f /etc/X11/xorg.conf
+sudo systemctl restart gdm3
 
 history -c
