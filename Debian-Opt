@@ -111,6 +111,8 @@ sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
 sudo systemctl enable vncserver-x11-serviced.service
 sudo systemctl enable vncserver-virtuald.service
 #sudo chkconfig --add vncserver-x11-serviced
-sudo apt -y install lightdm
+echo "lightdm shared/default-x-display-manager select lightdm" | \
+  sudo debconf-set-selections
+sudo DEBIAN_FRONTEND=noninteractive apt -y install lightdm
 
 history -c
