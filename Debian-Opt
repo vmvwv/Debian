@@ -96,6 +96,21 @@ gsettings set org.gnome.desktop.interface gtk-im-module 'fcitx5'
 rm -f ~/.bashrc
 cp -f /etc/skel/.bashrc ~/
 
+# Download and Configurate RealVNC (Firewall rule added and Disable Wayland)
+#LatestVer=$(wget -q -O - https://www.realvnc.com/en/connect/download/vnc/linux/ | grep -m 1 -oP "VNC-Server-[0-9].[0-9]{1,2}.[0-9]-Linux-x64.deb")
+#sudo apt install -y xfonts-wqy xorg xserver-xephyr
+#wget -P $PWD/Downloads https://downloads.realvnc.com/download/file/vnc.files/${LatestVer}
+wget -P /tmp https://raw.githubusercontent.com/vmvwv/vnc/main/VNC.deb
+sudo apt install ./VNC-Server-*-Linux-x64.deb
 sudo apt -y install lightdm
+sudo firewall-cmd --zone=public --permanent --add-service=vncserver-x11-serviced
+sudo firewall-cmd --reload
+sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
+#sudo ufw allow 5900
+#gdmconf="/etc/gdm3/daemon.conf"
+#sudo sed -i 's/^#.*WaylandEnable=.*/WaylandEnable=false/' "$gdmconf"
+sudo systemctl enable vncserver-x11-serviced.service
+sudo systemctl enable vncserver-virtuald.service
+#sudo chkconfig --add vncserver-x11-serviced
 
 history -c
