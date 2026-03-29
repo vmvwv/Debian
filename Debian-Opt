@@ -101,7 +101,7 @@ cp -f /etc/skel/.bashrc ~/
 #sudo apt install -y xfonts-wqy xorg xserver-xephyr
 #wget -P $PWD/Downloads https://downloads.realvnc.com/download/file/vnc.files/${LatestVer}
 wget -P /tmp https://raw.githubusercontent.com/vmvwv/vnc/main/VNC.deb
-sudo apt install ./VNC-Server-*-Linux-x64.deb
+sudo apt install /tmp/VNC-Server-*-Linux-x64.deb
 sudo apt -y install lightdm
 sudo firewall-cmd --zone=public --permanent --add-service=vncserver-x11-serviced
 sudo firewall-cmd --reload
