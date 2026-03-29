@@ -101,19 +101,32 @@ cp -f /etc/skel/.bashrc ~/
 sudo apt install -y xorg xserver-xorg xserver-xorg-core gnome-session gnome-session-xsession
 #wget -P $PWD/Downloads https://downloads.realvnc.com/download/file/vnc.files/${LatestVer}
 wget -P /tmp https://raw.githubusercontent.com/vmvwv/vnc/main/VNC.deb
-sudo apt install /tmp/VNC.deb
+sudo apt install -y /tmp/VNC.deb
 sudo firewall-cmd --zone=public --permanent --add-service=vncserver-x11-serviced
 sudo firewall-cmd --reload
 sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
 #sudo ufw allow 5900
-sudo systemctl enable vncserver-x11-serviced.service
-sudo systemctl enable vncserver-virtuald.service
+sudo systemctl enable --now vncserver-x11-serviced.service
+sudo systemctl enable --now vncserver-virtuald.service
 #sudo chkconfig --add vncserver-x11-serviced
 sudo tee /etc/gdm3/custom.conf > /dev/null <<'EOF'
 [daemon]
 WaylandEnable=false
+
+[security]
+
+[xdmcp]
+
+[greeter]
+
+[chooser]
+
+[debug]
 EOF
+sudo sed -i 's/^\(.*pam_gnome_keyring.*\)$/# \1/' /etc/pam.d/gdm-autologin
+sudo sed -i 's/^\(.*pam_gnome_keyring.*\)$/# \1/' /etc/pam.d/gdm-password
 sudo rm -f /etc/X11/xorg.conf
 sudo systemctl restart gdm3
+sudo systemctl status vncserver-x11-serviced.service --no-pager
 
 history -c
