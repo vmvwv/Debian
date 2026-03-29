@@ -102,7 +102,6 @@ cp -f /etc/skel/.bashrc ~/
 #wget -P $PWD/Downloads https://downloads.realvnc.com/download/file/vnc.files/${LatestVer}
 wget -P /tmp https://raw.githubusercontent.com/vmvwv/vnc/main/VNC.deb
 sudo apt install /tmp/VNC.deb
-sudo apt -y install lightdm
 sudo firewall-cmd --zone=public --permanent --add-service=vncserver-x11-serviced
 sudo firewall-cmd --reload
 sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
@@ -112,5 +111,6 @@ sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
 sudo systemctl enable vncserver-x11-serviced.service
 sudo systemctl enable vncserver-virtuald.service
 #sudo chkconfig --add vncserver-x11-serviced
+sudo apt -y install lightdm
 
 history -c
