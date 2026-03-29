@@ -109,6 +109,7 @@ sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
 sudo systemctl enable --now vncserver-x11-serviced.service
 sudo systemctl enable --now vncserver-virtuald.service
 #sudo chkconfig --add vncserver-x11-serviced
+sudo sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/daemon.conf
 sudo tee /etc/gdm3/custom.conf > /dev/null <<'EOF'
 [daemon]
 WaylandEnable=false
