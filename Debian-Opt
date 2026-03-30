@@ -108,7 +108,7 @@ cp -f /etc/skel/.bashrc ~/
 # Download and Configurate RealVNC (Firewall rule added and Disable Wayland)
 #LatestVer=$(wget -q -O - https://www.realvnc.com/en/connect/download/vnc/linux/ | grep -m 1 -oP "VNC-Server-[0-9].[0-9]{1,2}.[0-9]-Linux-x64.deb")
 #wget -P $PWD/Downloads https://downloads.realvnc.com/download/file/vnc.files/${LatestVer}
-sudo apt install -y xorg xserver-xorg xserver-xorg-core gnome-session gnome-session-xsession
+sudo apt install -y xorg xserver-xorg xserver-xorg-core gnome-session-xsession
 wget -P /tmp https://raw.githubusercontent.com/vmvwv/realvnc/main/VNC-Server-6.11.0-Linux-x64.deb
 sudo apt install -y /tmp/VNC-Server-6.11.0-Linux-x64.deb
 sudo firewall-cmd --zone=public --permanent --add-service=vncserver-x11-serviced
