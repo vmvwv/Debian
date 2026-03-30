@@ -90,7 +90,8 @@ gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/prof
 USER_NAME=($(ls -d /home/*/|cut -d/ -f3))
 
 sudo apt update
-sudo apt install -y --no-install-recommends systemd-timesyncd vim expect
+sudo apt install -y --no-install-recommends systemd-timesyncd vim expect \
+gnome-keyring-pkcs11 im-config fcitx5 fcitx5-chinese-addons fcitx5-config-qt fcitx5-frontend-gtk4 fcitx5-frontend-gtk3 fcitx5-frontend-gtk2 fonts-wqy-microhei fonts-wqy-zenhei libxss1 xdg-utils lightdm
 
 # Purge Obsoleted Kernels and Packages:
 sudo apt remove -y --purge \
@@ -110,38 +111,12 @@ cp -f /etc/skel/.bashrc ~/
 # Download and Configurate RealVNC (Firewall rule added and Disable Wayland)
 #LatestVer=$(wget -q -O - https://www.realvnc.com/en/connect/download/vnc/linux/ | grep -m 1 -oP "VNC-Server-[0-9].[0-9]{1,2}.[0-9]-Linux-x64.deb")
 #wget -P $PWD/Downloads https://downloads.realvnc.com/download/file/vnc.files/${LatestVer}
-sudo apt install -y xorg xserver-xorg xserver-xorg-core gnome-session gnome-session-xsession
+#sudo apt install -y xorg xserver-xorg xserver-xorg-core gnome-session gnome-session-xsession
 wget -P /tmp https://raw.githubusercontent.com/vmvwv/realvnc/main/VNC-Server-6.11.0-Linux-x64.deb
 sudo apt install -y /tmp/VNC-Server-6.11.0-Linux-x64.deb
 sudo firewall-cmd --zone=public --permanent --add-service=vncserver-x11-serviced
 sudo firewall-cmd --reload
 sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
 sudo systemctl enable --now vncserver-x11-serviced.service
-sudo systemctl enable --now vncserver-virtuald.service
-sudo tee -a /etc/vnc/config.d/common.custom << 'EOF'
-ServiceDiscoveryEnabled=0
-DisableOptions=1
-DesktopDisplayMode=Toolbar
-EOF
-#sudo ufw allow 5900
-#sudo chkconfig --add vncserver-x11-serviced
-sudo sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/daemon.conf
-sudo tee /etc/gdm3/custom.conf > /dev/null <<'EOF'
-[daemon]
-WaylandEnable=false
-
-[security]
-
-[xdmcp]
-
-[greeter]
-
-[chooser]
-
-[debug]
-EOF
-sudo sed -i 's/^\(.*pam_gnome_keyring.*\)$/# \1/' /etc/pam.d/gdm-autologin
-sudo sed -i 's/^\(.*pam_gnome_keyring.*\)$/# \1/' /etc/pam.d/gdm-password
-
 
 history -c
