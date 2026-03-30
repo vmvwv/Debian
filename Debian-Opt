@@ -24,7 +24,15 @@ gsettings set org.gnome.desktop.datetime automatic-timezone true
 gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
 
 gsettings set org.gnome.shell favorite-apps "['org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.SystemMonitor.desktop', 'org.gnome.Extensions.desktop', 'org.gnome.Settings.desktop']"
-gsettings set org.gnome.shell enabled-extensions "['dash-to-dock@micxgx.gmail.com', 'drive-menu@gnome-shell-extensions.gcampax.github.com', 'ubuntu-appindicators@ubuntu.com', 'system-monitor@gnome-shell-extensions.gcampax.github.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'ding@rastersoft.com', 'places-menu@gnome-shell-extensions.gcampax.github.com']"
+
+gnome-extensions enable dash-to-dock@micxgx.gmail.com
+gnome-extensions enable places-menu@gnome-shell-extensions.gcampax.github.com
+gnome-extensions enable ding@rastersoft.com
+gnome-extensions enable ubuntu-appindicators@ubuntu.com
+gnome-extensions enable drive-menu@gnome-shell-extensions.gcampax.github.com
+gnome-extensions enable system-monitor@gnome-shell-extensions.gcampax.github.com
+gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+
 gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 45
 gsettings set org.gnome.shell.extensions.dash-to-dock height-fraction 0.70
 gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
@@ -34,7 +42,7 @@ gsettings set org.gnome.shell.extensions.dash-to-dock autohide true
 gsettings set org.gnome.shell.extensions.dash-to-dock intellihide true
 gsettings set org.gnome.shell.extensions.dash-to-dock intellihide-mode 'FOCUS_APPLICATION_WINDOWS'
 gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'focus-minimize-or-previews'
-gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts-network true
+gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts-network false
 gsettings set org.gnome.shell.extensions.dash-to-dock hide-tooltip true
 gsettings set org.gnome.shell.extensions.user-theme name 'Yaru-dark'
 
@@ -49,10 +57,6 @@ gsettings set org.gnome.desktop.background primary-color '#000000'
 gsettings set org.gnome.desktop.background secondary-color '#000000'
 gsettings set org.gnome.desktop.background color-shading-type 'solid'
 
-gsettings set org.gnome.shell.extensions.ding show-network-volumes true
-
-gsettings set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
-gsettings set org.gtk.gtk4.Settings.FileChooser show-hidden true
 gsettings set org.gnome.nautilus.preferences show-hidden-files true
 gsettings set org.gnome.nautilus.preferences show-delete-permanently true
 gsettings set org.gnome.nautilus.window-state maximized true
@@ -114,6 +118,11 @@ sudo firewall-cmd --reload
 sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
 sudo systemctl enable --now vncserver-x11-serviced.service
 sudo systemctl enable --now vncserver-virtuald.service
+sudo tee -a /etc/vnc/config.d/common.custom << 'EOF'
+ServiceDiscoveryEnabled=0
+DisableOptions=1
+DesktopDisplayMode=Toolbar
+EOF
 #sudo ufw allow 5900
 #sudo chkconfig --add vncserver-x11-serviced
 sudo sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/daemon.conf
@@ -133,5 +142,6 @@ WaylandEnable=false
 EOF
 sudo sed -i 's/^\(.*pam_gnome_keyring.*\)$/# \1/' /etc/pam.d/gdm-autologin
 sudo sed -i 's/^\(.*pam_gnome_keyring.*\)$/# \1/' /etc/pam.d/gdm-password
+
 
 history -c
