@@ -22,21 +22,20 @@ echo "Waiting for 3 Seconds..."
 sleep 3
 
 apt full-upgrade -y
-apt install -y bash-completion firewalld \
+apt install -y --no-install-recommends ssh sudo bash-completion firewalld \
 gnome-core gnome-shell desktop-base \
 network-manager-gnome gnome-audio gnome-clocks gnome-shell-extension-manager gnome-shell-extension-user-theme gnome-shell-extension-system-monitor gnome-shell-extension-drive-menu gnome-shell-extension-places-menu gnome-shell-extension-prefs gnome-shell-extension-dashtodock gnome-keyring gnome-shell-extension-appindicator yaru-theme-gnome-shell gnome-shell-extension-desktop-icons-ng \
-fwupd-amd64-signed fwupd \
-ssh sudo --no-install-recommends
+fwupd-amd64-signed fwupd
 # Spare hardware driver:firmware-amd-graphics firmware-misc-nonfree firmware-linux-nonfree va-driver-all
 
 # Purge Obsoleted Packages, Temporary Files:
-apt remove -y gnome-contacts
+apt remove -y gnome-contacts cheese gnome-snapshot simple-scan gnome-maps totem totem-common totem-plugins gnome-connections
 apt autoremove -y ; apt autoclean -y ; apt autopurge -y
 
 # Repair Network Missing When Updating to Gnome Desktop
 sed -i 'N;$!P;$!D;$d' /etc/network/interfaces
 
-# Debian SSH Root Login and Gnome Automatic Login:
+# Debian SSH Root Login and Gnome Desktop Automatic Login:
 sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 sed -i 's|#  AutomaticLoginEnable|AutomaticLoginEnable|g' /etc/gdm3/daemon.conf
 sed -i '/AutomaticLoginEnable/i\AutomaticLogin=marvin' /etc/gdm3/daemon.conf
