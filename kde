@@ -1,0 +1,79 @@
+#!/bin/bash Debian Initiation Program
+#Copyright (c) 2026 By Marvin.W
+
+set -eu
+
+# Update Kernel:
+sed -i 's#http://deb.debian.org#http://mirrors.huaweicloud.com#g' /etc/apt/sources.list
+#sed -i 's#http://security.debian.org/debian-security#http://mirrors.huaweicloud.com/debian-security#g' /etc/apt/sources.list
+apt update
+apt install -y linux-image-amd64/stable-backports linux-headers-amd64/stable-backports
+
+# Configurate GRUB to Enable Serial Port (console=ttyS0,115200 |console=tty0)
+# So the Copy and PasteCan be Available under xterm.js
+# Configurate Debian System:	
+dpkg-reconfigure locales
+sed -i 's|GRUB_TIMEOUT=5|GRUB_TIMEOUT=1|g' /etc/default/grub
+#sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/s/"quiet"/"quiet console=ttyS0,115200"/' /etc/default/grub
+sed -i 's|#GRUB_GFXMODE|GRUB_GFXMODE|' /etc/default/grub
+update-grub
+
+echo "Waiting for 3 Seconds..."
+sleep 3
+
+apt full-upgrade -y
+apt install -y bash-completion firewalld \
+kde-plasma-desktop plasma-nm \
+fwupd-amd64-signed fwupd \
+ssh sudo --no-install-recommends
+# Spare hardware driver:firmware-amd-graphics firmware-misc-nonfree firmware-linux-nonfree va-driver-all
+
+# Purge Obsoleted Packages, Temporary Files:
+apt autoremove -y ; apt autoclean -y ; apt autopurge -y
+
+# Repair Network Missing When Updating to Gnome Desktop
+sed -i 'N;$!P;$!D;$d' /etc/network/interfaces
+
+# Debian SSH Root Login and Automatic Login:
+sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+sed -i 's|#  AutomaticLoginEnable|AutomaticLoginEnable|g' /etc/gdm3/daemon.conf
+sed -i '/AutomaticLoginEnable/i\AutomaticLogin=marvin' /etc/gdm3/daemon.conf
+
+# Make sudo Nopassword Setting Avaliable to Non-privilege Users:
+Sudo_Line=$(grep "%sudo" /etc/sudoers | tail -1)
+echo $Sudo_Line
+sed -i "s|$Sudo_Line|%sudo ALL=(ALL:ALL) NOPASSWD:ALL|g" /etc/sudoers
+#awk '($1 ~ "%" && !/sudo/) {$2= $2 FS "NOPASSWD:"; print }' /etc/sudoers
+sed -i '/privilege specification/a\marvin     ALL=(ALL:ALL) NOPASSWD:ALL' /etc/sudoers
+
+# Configurate Bash Commands Line:
+find /root /etc/skel -name '.bashrc' -type f | xargs sed -i "/HISTSIZE=/c\HISTSIZE=-1"
+find /root /etc/skel -name '.bashrc' -type f | xargs sed -i "/HISTFILESIZE=/c\HISTFILESIZE=-1"
+
+sed -i "s/#alias ll='ls -l'/alias ll='ls -ahls --color=always'/" /etc/skel/.bashrc
+sed -i "s/#alias l='ls -CF'/alias l='ls -ahls --color=always'/" /etc/skel/.bashrc
+sed -i "/# alias ll=/c\alias ll='ls -ahls --color=always'" /root/.bashrc
+sed -i "/# alias l=/c\alias l='ls -ahls --color=always'" /root/.bashrc
+
+# Vim and Vim.Tiny Configuration Customizing:
+cat <<-EOF >> /etc/vim/vimrc.tiny
+" Tailored To Marvin.W
+
+set nu ts=4 autoindent hlsearch incsearch showmode showcmd showmatch ignorecase smartcase hidden mouse=a paste nocompatible nobackup noswapfile cursorline ruler wrap linebreak laststatus=2
+hi cursorLine cterm=bold ctermbg=DarkGray ctermfg=NONE
+EOF
+
+cat <<-EOF >> /etc/vim/vimrc
+" Tailored To Marvin.W
+
+set nu ts=4 autoindent hlsearch incsearch showmode showcmd showmatch ignorecase smartcase hidden mouse=a paste nocompatible nobackup noswapfile cursorline ruler wrap linebreak laststatus=2
+hi cursorLine cterm=bold ctermbg=DarkGray ctermfg=NONE
+EOF
+
+# Enable IP Forwarding and Allow Permanent Firewall Masquerading:
+echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
+echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
+sysctl -p /etc/sysctl.conf
+firewall-cmd --permanent --add-masquerade
+
+exit 0
