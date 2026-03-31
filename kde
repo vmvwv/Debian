@@ -22,10 +22,9 @@ echo "Waiting for 3 Seconds..."
 sleep 3
 
 apt full-upgrade -y
-apt install -y bash-completion firewalld \
+apt install -y --no-install-recommends ssh sudo bash-completion firewalld \
 kde-plasma-desktop plasma-nm \
-fwupd-amd64-signed fwupd \
-ssh sudo --no-install-recommends
+fwupd-amd64-signed fwupd
 # Spare hardware driver:firmware-amd-graphics firmware-misc-nonfree firmware-linux-nonfree va-driver-all
 
 # Purge Obsoleted Packages, Temporary Files:
@@ -36,8 +35,6 @@ sed -i 'N;$!P;$!D;$d' /etc/network/interfaces
 
 # Debian SSH Root Login and Automatic Login:
 sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
-sed -i 's|#  AutomaticLoginEnable|AutomaticLoginEnable|g' /etc/gdm3/daemon.conf
-sed -i '/AutomaticLoginEnable/i\AutomaticLogin=marvin' /etc/gdm3/daemon.conf
 
 # Make sudo Nopassword Setting Avaliable to Non-privilege Users:
 Sudo_Line=$(grep "%sudo" /etc/sudoers | tail -1)
