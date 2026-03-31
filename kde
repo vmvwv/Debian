@@ -23,7 +23,7 @@ sleep 3
 
 apt full-upgrade -y
 apt install -y --no-install-recommends ssh sudo bash-completion firewalld \
-kde-standard sddm\
+kde-standard sddm \
 fwupd-amd64-signed fwupd
 # Spare hardware driver:firmware-amd-graphics firmware-misc-nonfree firmware-linux-nonfree va-driver-all
 
