@@ -42,8 +42,6 @@ gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'focus-minimi
 gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts-network false
 gsettings set org.gnome.shell.extensions.dash-to-dock hide-tooltip true
 gsettings set org.gnome.shell.extensions.user-theme name 'Yaru-dark'
-gsettings org.gnome.shell.extensions.dash-to-dock intellihide true
-gsettings org.gnome.shell.extensions.dash-to-dock autohide true
 
 gsettings set org.gnome.gnome-system-monitor show-dependencies true
 gsettings set org.gnome.gnome-system-monitor network-total-in-bits true
