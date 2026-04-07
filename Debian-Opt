@@ -123,6 +123,6 @@ sudo sed -i 's|AutomaticLoginEnable|#  AutomaticLoginEnable|g' /etc/gdm3/daemon.
 # Enable IP Forwarding and Allow Permanent Firewall Masquerading:
 echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
 echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
-firewall-cmd --permanent --add-masquerade
+sudo firewall-cmd --permanent --add-masquerade
 
 history -c
