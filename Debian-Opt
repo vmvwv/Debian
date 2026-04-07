@@ -120,6 +120,7 @@ sudo grdctl --system rdp set-tls-cert \
 sudo grdctl --system rdp set-credentials marvin 'Marvin'
 sudo grdctl --system rdp enable
 sudo grdctl --system rdp disable-view-only
+sudo systemctl enable --now gnome-remote-desktop.service
 sudo grdctl --system status
 sudo firewall-cmd --add-port=3389/tcp --permanent
 sudo sed -i 's|AutomaticLoginEnable|#  AutomaticLoginEnable|g' /etc/gdm3/daemon.conf
@@ -130,9 +131,9 @@ echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
 sudo firewall-cmd --permanent --add-masquerade
 
 # Configurate fcitx5 environment:
-pkill fcitx5
-mkdir -p $HOME/.config/fcitx5
-cat > $HOME/.config/fcitx5/profile << 'EOF'
+pkill -x fcitx5 || true
+mkdir -p "$HOME/.config/fcitx5"
+cat > "$HOME/.config/fcitx5/profile" <<'EOF'
 [Groups/0]
 Name=Default
 Default Layout=us
@@ -149,7 +150,7 @@ Layout=
 [GroupOrder]
 0=Default
 EOF
-
+touch $HOME/.config/fcitx5/conf/pinyin.conf
 sed -i '/PageSize/c\PageSize=9' $HOME/.config/fcitx5/conf/pinyin.conf
 sed -i '/Prediction/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
 sed -i '/PrevPage/{n;s/^0=minus$/0=comma/;n;N;N;d;}' $HOME/.config/fcitx5/conf/pinyin.conf
