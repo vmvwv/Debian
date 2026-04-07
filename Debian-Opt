@@ -54,6 +54,8 @@ gsettings set org.gnome.desktop.background primary-color '#000000'
 gsettings set org.gnome.desktop.background secondary-color '#000000'
 gsettings set org.gnome.desktop.background color-shading-type 'solid'
 
+gsettings set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
+gsettings set org.gtk.gtk4.Settings.FileChooser show-hidden true
 gsettings set org.gnome.nautilus.preferences show-hidden-files true
 gsettings set org.gnome.nautilus.preferences show-delete-permanently true
 gsettings set org.gnome.nautilus.window-state maximized true
@@ -150,23 +152,6 @@ Layout=
 [GroupOrder]
 0=Default
 EOF
-touch $HOME/.config/fcitx5/conf/pinyin.conf
-sed -i '/PageSize/c\PageSize=9' $HOME/.config/fcitx5/conf/pinyin.conf
-sed -i '/Prediction/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
-sed -i '/PrevPage/{n;s/^0=minus$/0=comma/;n;N;N;d;}' $HOME/.config/fcitx5/conf/pinyin.conf
-sed -i '/NextPage/{n;s/^0=equal$/0=period/;n;N;N;d;}' $HOME/.config/fcitx5/conf/pinyin.conf
-sed -i '/AN_ANG/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
-sed -i '/EN_ENG/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
-sed -i '/IAN_IANG/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
-sed -i '/IN_ING/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
-sed -i '/UAN_UANG/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
-sed -i '/C_CH/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
-sed -i '/S_SH/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
-sed -i '/Z_ZH/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
-
-grep -q "^Font=" ~/.config/fcitx5/conf/classicui.conf 2>/dev/null \
-  && sed -i 's/^Font=.*/Font=Sans 16/' ~/.config/fcitx5/conf/classicui.conf \
-  || echo "Font=Sans 16" >> ~/.config/fcitx5/conf/classicui.conf
-fcitx5 -d &
 
 history -c
+sudo reboot
