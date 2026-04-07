@@ -87,7 +87,7 @@ gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/prof
 USER_NAME=($(ls -d /home/*/|cut -d/ -f3))
 
 sudo apt update
-sudo apt install -y --no-install-recommends vim expect firewalld pkexec procps \
+sudo apt install -y --no-install-recommends vim expect firewalld pkexec \
 gnome-keyring-pkcs11 gnome-shell-extension-kimpanel im-config fcitx5 fcitx5-chinese-addons fcitx5-config-qt fcitx5-frontend-gtk4 fcitx5-frontend-gtk3 fcitx5-frontend-gtk2 fonts-wqy-microhei fonts-wqy-zenhei libxss1 xdg-utils
 
 # Purge Obsoleted Kernels and Packages:
@@ -123,7 +123,6 @@ sudo sed -i 's|AutomaticLoginEnable|#  AutomaticLoginEnable|g' /etc/gdm3/daemon.
 # Enable IP Forwarding and Allow Permanent Firewall Masquerading:
 echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
 echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
-sysctl -p /etc/sysctl.conf
 firewall-cmd --permanent --add-masquerade
 
 history -c
