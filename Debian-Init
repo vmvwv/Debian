@@ -11,7 +11,7 @@ apt install -y linux-image-amd64/stable-backports linux-headers-amd64/stable-bac
 
 # Configurate GRUB to Enable Serial Port (console=ttyS0,115200 |console=tty0)
 # So the Copy and PasteCan be Available under xterm.js
-# Configurate Debian System:	
+# Configurate Debian System:
 dpkg-reconfigure locales
 sed -i 's|GRUB_TIMEOUT=5|GRUB_TIMEOUT=1|g' /etc/default/grub
 #sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/s/"quiet"/"quiet console=ttyS0,115200"/' /etc/default/grub
@@ -22,9 +22,9 @@ echo "Waiting for 3 Seconds..."
 sleep 3
 
 apt full-upgrade -y
-apt install -y --no-install-recommends ssh sudo bash-completion firewalld \
+apt install -y --no-install-recommends ssh sudo bash-completion \
 gnome-core gnome-shell desktop-base \
-network-manager-gnome gnome-audio gnome-clocks gnome-shell-extension-manager gnome-shell-extension-user-theme gnome-shell-extension-system-monitor gnome-shell-extension-drive-menu gnome-shell-extension-places-menu gnome-shell-extension-prefs gnome-shell-extension-dashtodock gnome-keyring gnome-shell-extension-appindicator yaru-theme-gnome-shell gnome-shell-extension-desktop-icons-ng \
+network-manager-gnome gnome-audio gnome-clocks gnome-shell-extension-manager gnome-remote-desktop gnome-shell-extension-user-theme gnome-shell-extension-system-monitor gnome-shell-extension-drive-menu gnome-shell-extension-places-menu gnome-shell-extension-prefs gnome-shell-extension-dashtodock gnome-keyring gnome-shell-extension-appindicator yaru-theme-gnome-shell gnome-shell-extension-desktop-icons-ng \
 fwupd-amd64-signed fwupd
 # Spare hardware driver:firmware-amd-graphics firmware-misc-nonfree firmware-linux-nonfree va-driver-all
 
@@ -70,11 +70,5 @@ cat <<-EOF >> /etc/vim/vimrc
 set nu ts=4 autoindent hlsearch incsearch showmode showcmd showmatch ignorecase smartcase hidden mouse=a paste nocompatible nobackup noswapfile cursorline ruler wrap linebreak laststatus=2
 hi cursorLine cterm=bold ctermbg=DarkGray ctermfg=NONE
 EOF
-
-# Enable IP Forwarding and Allow Permanent Firewall Masquerading:
-echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
-echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
-sysctl -p /etc/sysctl.conf
-firewall-cmd --permanent --add-masquerade
 
 exit 0
