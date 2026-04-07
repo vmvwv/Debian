@@ -125,4 +125,44 @@ echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
 echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
 sudo firewall-cmd --permanent --add-masquerade
 
+# Configurate fcitx5 environment:
+fcitx5 --exit 2>/dev/null; pkill fcitx5
+gnome-extensions enable kimpanel@kde.org
+mkdir -p $HOME/.config/fcitx5
+cat > $HOME/.config/fcitx5/profile << 'EOF'
+[Groups/0]
+Name=Default
+Default Layout=us
+DefaultIM=pinyin
+
+[Groups/0/Items/0]
+Name=keyboard-us
+Layout=
+
+[Groups/0/Items/1]
+Name=pinyin
+Layout=
+
+[GroupOrder]
+0=Default
+EOF
+
+sed -i '/PageSize/c\PageSize=9' $HOME/.config/fcitx5/conf/pinyin.conf
+sed -i '/Prediction/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
+sed -i '/PrevPage/{n;s/^0=minus$/0=comma/;n;N;N;d;}' $HOME/.config/fcitx5/conf/pinyin.conf
+sed -i '/NextPage/{n;s/^0=equal$/0=period/;n;N;N;d;}' $HOME/.config/fcitx5/conf/pinyin.conf
+sed -i '/AN_ANG/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
+sed -i '/EN_ENG/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
+sed -i '/IAN_IANG/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
+sed -i '/IN_ING/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
+sed -i '/UAN_UANG/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
+sed -i '/C_CH/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
+sed -i '/S_SH/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
+sed -i '/Z_ZH/s/False/True/g' $HOME/.config/fcitx5/conf/pinyin.conf
+
+grep -q "^Font=" ~/.config/fcitx5/conf/classicui.conf 2>/dev/null \
+  && sed -i 's/^Font=.*/Font=Sans 16/' ~/.config/fcitx5/conf/classicui.conf \
+  || echo "Font=Sans 16" >> ~/.config/fcitx5/conf/classicui.conf
+fcitx5 -d &
+
 history -c
