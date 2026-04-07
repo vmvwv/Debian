@@ -152,4 +152,17 @@ Layout=
 EOF
 
 history -c
-sudo reboot
+
+read -t 5 -p "Reboot Now？[Y/n]（Default: Yes; Other Input Will Stay the Main Script）: " ans
+case "${ans:-y}" in
+  [Yy]* | "" )
+    echo "✅ System will reboot immediately"
+    sudo reboot
+  [Nn]* )
+    echo "❌ Pause Now"
+    exit 0
+    ;;
+  * )
+    echo "⚠️ Invalid Input, Countinue..."
+    ;;
+esac
