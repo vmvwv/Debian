@@ -101,20 +101,23 @@ cp -f /etc/skel/.bashrc ~/
 # Configurate Gnome Remote Desktop Environment:
 sudo systemctl daemon-reload
 sudo systemctl stop gnome-remote-desktop.service
-sudo install -d -o gnome-remote-desktop -g gnome-remote-desktop -m 700 \
-  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop
-sudo -u gnome-remote-desktop sh -c '
-openssl req -new -newkey rsa:4096 -days 3560 -nodes -x509 \
-  -subj "/C=CN/ST=HK/L=HK/O=Home/CN=debian" \
-  -out ~/.local/share/gnome-remote-desktop/tls.crt \
-  -keyout ~/.local/share/gnome-remote-desktop/tls.key'
-
+sudo -u gnome-remote-desktop mkdir -p \
+  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates
+sudo -u gnome-remote-desktop openssl req -newkey rsa:2048 -nodes \
+  -keyout /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key \
+  -x509 -days 3650 \
+  -out /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt \
+  -subj "/C=CN/ST=HK/L=HK/O=Home/CN=debian"
+sudo chown -R gnome-remote-desktop:gnome-remote-desktop \
+  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/
+sudo chmod 600 /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key
+sudo chmod 644 /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt
 sudo grdctl --system rdp disable
-sudo grdctl --system rdp set-tls-key /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/tls.key
-sudo grdctl --system rdp set-tls-cert /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/tls.crt
+sudo grdctl --system rdp set-tls-key \
+  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key
+sudo grdctl --system rdp set-tls-cert \
+  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt
 sudo grdctl --system rdp set-credentials marvin 'Marvin'
-sudo grdctl --system rdp enable
-sudo systemctl restart gnome-remote-desktop.service
 sudo grdctl --system rdp enable
 sudo grdctl --system rdp disable-view-only
 sudo grdctl --system status
@@ -128,7 +131,6 @@ sudo firewall-cmd --permanent --add-masquerade
 
 # Configurate fcitx5 environment:
 pkill fcitx5
-gnome-extensions enable kimpanel@kde.org
 mkdir -p $HOME/.config/fcitx5
 cat > $HOME/.config/fcitx5/profile << 'EOF'
 [Groups/0]
