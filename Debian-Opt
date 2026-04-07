@@ -158,6 +158,7 @@ case "${ans:-y}" in
   [Yy]* | "" )
     echo "✅ System will reboot immediately"
     sudo reboot
+    ;;
   [Nn]* )
     echo "❌ Pause Now"
     exit 0
