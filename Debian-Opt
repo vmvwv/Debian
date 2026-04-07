@@ -118,7 +118,7 @@ grdctl rdp enable
 grdctl rdp disable-view-only
 grdctl status
 sudo firewall-cmd --add-port=3389/tcp --permanent
-sed -i 's|AutomaticLoginEnable|#  AutomaticLoginEnable|g' /etc/gdm3/daemon.conf
+sudo sed -i 's|AutomaticLoginEnable|#  AutomaticLoginEnable|g' /etc/gdm3/daemon.conf
 
 # Enable IP Forwarding and Allow Permanent Firewall Masquerading:
 echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
