@@ -1,0 +1,245 @@
+#!/usr/bin/env bash
+# Debian Optimization Program
+# Copyright (c) 2026 By Marvin.W
+
+set -eu
+
+# Debian Gnome Configuring:
+gsettings set org.gnome.Settings last-panel 'network'
+gsettings set org.gnome.system.location enabled false
+gsettings set org.gnome.desktop.session idle-delay 0
+gsettings set org.gnome.desktop.screensaver lock-delay 0
+gsettings set org.gnome.desktop.screensaver lock-enabled false
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
+gsettings set org.gnome.desktop.notifications show-in-lock-screen false
+gsettings set org.gnome.desktop.privacy remove-old-trash-files false
+gsettings set org.gnome.desktop.privacy remove-old-temp-files true
+gsettings set org.gnome.desktop.privacy old-files-age 1
+gsettings set org.gnome.desktop.privacy report-technical-problems false
+gsettings set org.gnome.desktop.media-handling autorun-never true
+gsettings set org.gnome.desktop.interface enable-animations false
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+gsettings set org.gnome.desktop.interface enable-animations false
+gsettings set org.gnome.desktop.datetime automatic-timezone true
+gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
+
+gsettings set org.gnome.shell favorite-apps "['org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.SystemMonitor.desktop', 'org.gnome.Extensions.desktop', 'org.gnome.Settings.desktop']"
+
+gnome-extensions enable dash-to-dock@micxgx.gmail.com
+gnome-extensions enable places-menu@gnome-shell-extensions.gcampax.github.com
+gnome-extensions enable ding@rastersoft.com
+gnome-extensions enable ubuntu-appindicators@ubuntu.com
+gnome-extensions enable kimpanel@kde.org
+gnome-extensions enable drive-menu@gnome-shell-extensions.gcampax.github.com
+gnome-extensions enable system-monitor@gnome-shell-extensions.gcampax.github.com
+gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+
+gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 45
+gsettings set org.gnome.shell.extensions.dash-to-dock height-fraction 0.70
+gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
+gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed true
+gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'LEFT'
+gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'focus-minimize-or-previews'
+gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts-network false
+gsettings set org.gnome.shell.extensions.dash-to-dock hide-tooltip true
+gsettings set org.gnome.shell.extensions.user-theme name 'Yaru-dark'
+
+gsettings set org.gnome.gnome-system-monitor show-dependencies true
+gsettings set org.gnome.gnome-system-monitor network-total-in-bits true
+gsettings set org.gnome.gnome-system-monitor.disksview col-free-visible true
+gsettings set org.gnome.gnome-system-monitor.disksview col-free-width 80
+gsettings set org.gnome.gnome-system-monitor current-tab 'resources'
+
+gsettings set org.gnome.desktop.background picture-uri-dark ''
+gsettings set org.gnome.desktop.background primary-color '#000000'
+gsettings set org.gnome.desktop.background secondary-color '#000000'
+gsettings set org.gnome.desktop.background color-shading-type 'solid'
+
+gsettings set org.gnome.nautilus.preferences show-hidden-files true
+gsettings set org.gnome.nautilus.preferences show-delete-permanently true
+gsettings set org.gnome.nautilus.window-state maximized true
+gsettings set org.gnome.nautilus.icon-view default-zoom-level 'medium'
+gsettings set org.gtk.Settings.FileChooser sort-directories-first true
+gsettings set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
+gsettings set org.gtk.Settings.FileChooser show-hidden true
+gsettings set org.gtk.gtk4.Settings.FileChooser show-hidden true
+
+gsettings set org.gnome.TextEditor show-grid true
+gsettings set org.gnome.TextEditor highlight-current-line true
+gsettings set org.gnome.TextEditor show-map true
+gsettings set org.gnome.TextEditor show-line-numbers true
+gsettings set org.gnome.TextEditor use-system-font false
+gsettings set org.gnome.TextEditor style-scheme 'oblivion'
+gsettings set org.gnome.TextEditor custom-font 'Monospace 12'
+gsettings set org.gnome.TextEditor wrap-text true
+gsettings set org.gnome.TextEditor restore-session true
+gsettings set org.gnome.TextEditor right-margin-position 100
+gsettings set org.gnome.TextEditor discover-settings true
+
+profile=$(gsettings get org.gnome.Terminal.ProfilesList default)
+profile=${profile:1:-1}
+gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile/" default-size-columns 180
+gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile/" default-size-rows 60
+gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile/" use-system-font false
+gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile/" font 'Monospace 13'
+gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile/" cursor-blink-mode 'on'
+gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile/" use-theme-colors false
+gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile/" background-color 'rgb(0,0,0)'
+gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile/" foreground-color 'rgb(208,207,204)'
+gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile/" scrollback-unlimited true
+
+# Fetch User Name
+USER_NAME=($(ls -d /home/*/|cut -d/ -f3))
+
+sudo apt update
+sudo apt install -y --no-install-recommends vim expect firewalld \
+gnome-keyring-pkcs11 im-config fcitx5 fcitx5-chinese-addons fcitx5-config-qt fcitx5-frontend-gtk4 fcitx5-frontend-gtk3 fcitx5-frontend-gtk2 fonts-wqy-microhei fonts-wqy-zenhei libxss1 xdg-utils
+
+# Purge Obsoleted Kernels and Packages:
+sudo apt autopurge -y
+sudo apt autoremove -y
+
+# Enable IP Forwarding and Allow Permanent Firewall Masquerading:
+echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
+echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
+sudo firewall-cmd --permanent --add-masquerade
+
+# Add Rule of RDP Service to Firewall:
+sudo firewall-cmd --add-port=3389/tcp --permanent
+if systemctl cat vncserver-x11-serviced.service >/dev/null 2>&1; then
+            sudo firewall-cmd --zone=public --permanent --add-service=vncserver-x11-serviced
+            sudo firewall-cmd --reload
+fi
+
+# Configurate fcitx5 environment:
+pkill -x fcitx5 || true
+mkdir -p "$HOME/.config/fcitx5"
+cat > "$HOME/.config/fcitx5/profile" <<'EOF'
+[Groups/0]
+Name=Default
+Default Layout=us
+DefaultIM=pinyin
+
+[Groups/0/Items/0]
+Name=keyboard-us
+Layout=
+
+[Groups/0/Items/1]
+Name=pinyin
+Layout=
+
+[GroupOrder]
+0=Default
+EOF
+
+
+# Remote Environment Selection:
+PS3="Please Select a Remote Control Environment:"
+
+options=(
+    "RealVNC"
+    "Gnome-Remote-Desktop"
+    "Reboot"
+    "Exit Script"
+)
+
+select choice in "${options[@]}"; do
+    case "$REPLY" in
+        1)
+            echo "Deploy VNC Environment..."
+
+            sudo apt install -y xorg xserver-xorg xserver-xorg-core gnome-session-xsession
+            wget -O /tmp/VNC-Server-6.11.0-Linux-x64.deb \
+    'https://raw.githubusercontent.com/vmvwv/realvnc/main/VNC-Server-6.11.0-Linux-x64.deb'
+            sudo apt install -y /tmp/VNC-Server-6.11.0-Linux-x64.deb
+            sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
+            sudo systemctl enable vncserver-x11-serviced.service
+            sudo sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/daemon.conf
+            sudo tee /etc/gdm3/custom.conf > /dev/null <<'EOF'
+[daemon]
+WaylandEnable=false
+
+[security]
+
+[xdmcp]
+
+[greeter]
+
+[chooser]
+
+[debug]
+EOF
+
+            break
+            ;;
+
+        2)
+            echo "Deploy RDP Environmet..."
+
+            # Configurate Gnome Remote Desktop Environment:
+            systemctl daemon-reload
+            systemctl stop gnome-remote-desktop.service
+            sudo -u gnome-remote-desktop mkdir -p \
+              /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates
+            sudo -u gnome-remote-desktop openssl req -newkey rsa:2048 -nodes \
+              -keyout /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key \
+              -x509 -days 3650 \
+              -out /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt \
+              -subj "/C=CN/ST=HK/L=HK/O=Home/CN=debian"
+            chown -R gnome-remote-desktop:gnome-remote-desktop \
+              /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/
+            chmod 600 /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key
+            chmod 644 /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt
+            grdctl --system rdp disable
+            grdctl --system rdp set-tls-key \
+              /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key
+            grdctl --system rdp set-tls-cert \
+              /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt
+            grdctl --system rdp set-credentials marvin 'Marvin'
+            grdctl --system rdp enable
+            grdctl --system rdp disable-view-only
+            systemctl enable --now gnome-remote-desktop.service
+            grdctl --system status
+
+            # Configurate Gnome Desktop Default Login User:
+            sudo sed -i '/AutomaticLoginEnable/i\AutomaticLogin=marvin' /etc/gdm3/daemon.conf
+            sudo sed -i 's|AutomaticLoginEnable|#  AutomaticLoginEnable|g' /etc/gdm3/daemon.conf
+
+            # Gnome Desktop RDP Permission Elevation
+            cat <<'EOF' | sudo tee /etc/polkit-1/rules.d/10-shutdown-reboot.rules >/dev/null
+polkit.addRule(function(action, subject) {
+    if (
+        (action.id == "org.freedesktop.login1.reboot" ||
+         action.id == "org.freedesktop.login1.reboot-multiple-sessions" ||
+         action.id == "org.freedesktop.login1.reboot-ignore-inhibit" ||
+         action.id == "org.freedesktop.login1.power-off" ||
+         action.id == "org.freedesktop.login1.power-off-multiple-sessions" ||
+         action.id == "org.freedesktop.login1.power-off-ignore-inhibit") &&
+        (subject.user == "marvin" || subject.isInGroup("sudo"))
+    ) {
+        return polkit.Result.YES;
+    }
+});
+EOF
+
+            break
+            ;;
+
+        3)
+            echo "Optimization Completed..."
+            sleep 3
+            sudo systemctl reboot
+            ;;
+
+        4)
+            echo "Back to Shell"
+            break
+            ;;
+
+        *)
+            echo "Invalid Input，Please input 1、2、3 or 4."
+            ;;
+    esac
+done </dev/tty
+
+history -c
