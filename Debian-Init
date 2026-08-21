@@ -38,14 +38,29 @@ sed -i "s|$Sudo_Line|%sudo ALL=(ALL:ALL) NOPASSWD:ALL|g" /etc/sudoers
 #awk '($1 ~ "%" && !/sudo/) {$2= $2 FS "NOPASSWD:"; print }' /etc/sudoers
 sed -i '/privilege specification/a\marvin     ALL=(ALL:ALL) NOPASSWD:ALL' /etc/sudoers
 
-# Configurate Bash Commands Line:
-find /root /etc/skel -name '.bashrc' -type f | xargs sed -i "/HISTSIZE=/c\HISTSIZE=-1"
-find /root /etc/skel -name '.bashrc' -type f | xargs sed -i "/HISTFILESIZE=/c\HISTFILESIZE=-1"
+# Configurate Bash Environment:
+cat >> /etc/bash.bashrc <<'EOF'
 
-sed -i "s/#alias ll='ls -l'/alias ll='ls -ahls --color=always'/" /etc/skel/.bashrc
-sed -i "s/#alias l='ls -CF'/alias l='ls -ahls --color=always'/" /etc/skel/.bashrc
-sed -i "/# alias ll=/c\alias ll='ls -ahls --color=always'" /root/.bashrc
-sed -i "/# alias l=/c\alias l='ls -ahls --color=always'" /root/.bashrc
+HISTSIZE=-1
+HISTFILESIZE=-1
+alias ll='ls -ahls --color=auto'
+alias l='ls -ahls --color=auto'
+EOF
+
+if grep -q '^HISTSIZE=' /etc/skel/.bashrc; then
+    sed -i '/^HISTSIZE=/c\HISTSIZE=-1' /etc/skel/.bashrc
+else
+    echo 'HISTSIZE=-1' >> /etc/skel/.bashrc
+fi
+
+if grep -q '^HISTFILESIZE=' /etc/skel/.bashrc; then
+    sed -i '/^HISTFILESIZE=/c\HISTFILESIZE=-1' /etc/skel/.bashrc
+else
+    echo 'HISTFILESIZE=-1' >> /etc/skel/.bashrc
+fi
+
+sed -i "s/#alias ll='ls -l'/alias ll='ls -ahls --color=auto'/" /etc/skel/.bashrc
+sed -i "s/#alias l='ls -CF'/alias l='ls -ahls --color=auto'/" /etc/skel/.bashrc
 
 # Vim and Vim.Tiny Configuration Customizing:
 cat <<-EOF >> /etc/vim/vimrc.tiny
