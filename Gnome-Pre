@@ -122,6 +122,4 @@ EOF
             echo "Invalid Input，Please input 1、2、3 or 4."
             ;;
     esac
-done
-tty
-test -t 0 && echo "stdin 是终端" || echo "stdin 不是终端"
+done </dev/tty
