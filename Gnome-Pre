@@ -13,14 +13,20 @@ network-manager-gnome gnome-audio gnome-clocks gnome-shell-extension-manager gno
 apt remove -y gnome-contacts cheese gnome-snapshot simple-scan gnome-maps totem totem-common totem-plugins gnome-connections
 apt autoremove -y ; apt autoclean -y ; apt autopurge -y
 
+# Repair Gnome Network Missing due to fail to config NetworkManager from ifupdown:
+sudo sed -i \
+  -e '/^allow-hotplug/s/^/# /' \
+  -e '/^iface/s/^/# /' \
+  /etc/network/interfaces
+
 # Remote Environment Selection:
-PS3="Please choose:"
+PS3="Please Select a Remote Control Environment:"
 
 options=(
-    "vnc"
-    "rdp"
-    "reboot"
-    "Exit"
+    "RealVNC"
+    "Gnome-Remote-Desktop"
+    "Reboot"
+    "Exit Script"
 )
 
 select choice in "${options[@]}"; do
