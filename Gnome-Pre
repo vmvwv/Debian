@@ -14,12 +14,7 @@ apt remove -y gnome-contacts cheese gnome-snapshot simple-scan gnome-maps totem 
 apt autoremove -y ; apt autoclean -y ; apt autopurge -y
 
 # Remote Environment Selection:
-if [[ ! -r /dev/tty ]]; then
-    echo "错误：当前没有可用的交互式终端。" >&2
-    exit 1
-fi
-
-PS3="Please choose: "
+PS3="Please choose:"
 
 options=(
     "vnc"
@@ -28,20 +23,19 @@ options=(
     "Exit"
 )
 
-while true; do
-    select choice in "${options[@]}"; do
-        case "$REPLY" in
-            1)
-                echo "Deploy VNC Environment..."
+select choice in "${options[@]}"; do
+    case "$REPLY" in
+        1)
+            echo "Deploy VNC Environment..."
 
-                sudo apt install -y xorg xserver-xorg xserver-xorg-core gnome-session-xsession
-                wget -O /tmp/VNC-Server-6.11.0-Linux-x64.deb \
-        'https://raw.githubusercontent.com/vmvwv/realvnc/main/VNC-Server-6.11.0-Linux-x64.deb'
-                sudo apt install -y /tmp/VNC-Server-6.11.0-Linux-x64.deb
-                sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
-                sudo systemctl enable vncserver-x11-serviced.service
-                sudo sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/daemon.conf
-                sudo tee /etc/gdm3/custom.conf > /dev/null <<'EOF'
+            sudo apt install -y xorg xserver-xorg xserver-xorg-core gnome-session-xsession
+            wget -O /tmp/VNC-Server-6.11.0-Linux-x64.deb \
+    'https://raw.githubusercontent.com/vmvwv/realvnc/main/VNC-Server-6.11.0-Linux-x64.deb'
+            sudo apt install -y /tmp/VNC-Server-6.11.0-Linux-x64.deb
+            sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
+            sudo systemctl enable vncserver-x11-serviced.service
+            sudo sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/daemon.conf
+            sudo tee /etc/gdm3/custom.conf > /dev/null <<'EOF'
 [daemon]
 WaylandEnable=false
 
@@ -55,45 +49,45 @@ WaylandEnable=false
 
 [debug]
 EOF
-                sudo sed -i 's/^\(.*pam_gnome_keyring.*\)$/# \1/' /etc/pam.d/gdm-autologin
-                sudo sed -i 's/^\(.*pam_gnome_keyring.*\)$/# \1/' /etc/pam.d/gdm-password
+            sudo sed -i 's/^\(.*pam_gnome_keyring.*\)$/# \1/' /etc/pam.d/gdm-autologin
+            sudo sed -i 's/^\(.*pam_gnome_keyring.*\)$/# \1/' /etc/pam.d/gdm-password
 
-                break
-                ;;
+            break
+            ;;
 
-            2)
-                echo "Deploy RDP Environmet..."
+        2)
+            echo "Deploy RDP Environmet..."
 
-                # Configurate Gnome Remote Desktop Environment:
-                systemctl daemon-reload
-                systemctl stop gnome-remote-desktop.service
-                sudo -u gnome-remote-desktop mkdir -p \
-                  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates
-                sudo -u gnome-remote-desktop openssl req -newkey rsa:2048 -nodes \
-                  -keyout /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/  certificates/rdp-tls.key \
-                  -x509 -days 3650 \
-                  -out /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/ certificates/rdp-tls.crt \
-                  -subj "/C=CN/ST=HK/L=HK/O=Home/CN=debian"
-                chown -R gnome-remote-desktop:gnome-remote-desktop \
-                  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/
-                chmod 600 /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/  certificates/rdp-tls.key
-                chmod 644 /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/  certificates/rdp-tls.crt
-                grdctl --system rdp disable
-                grdctl --system rdp set-tls-key \
-                  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/ rdp-tls.key
-                grdctl --system rdp set-tls-cert \
-                  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/ rdp-tls.crt
-                grdctl --system rdp set-credentials marvin 'Marvin'
-                grdctl --system rdp enable
-                grdctl --system rdp disable-view-only
-                systemctl enable --now gnome-remote-desktop.service
-                grdctl --system status
+            # Configurate Gnome Remote Desktop Environment:
+            systemctl daemon-reload
+            systemctl stop gnome-remote-desktop.service
+            sudo -u gnome-remote-desktop mkdir -p \
+              /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates
+            sudo -u gnome-remote-desktop openssl req -newkey rsa:2048 -nodes \
+              -keyout /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key \
+              -x509 -days 3650 \
+              -out /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt \
+              -subj "/C=CN/ST=HK/L=HK/O=Home/CN=debian"
+            chown -R gnome-remote-desktop:gnome-remote-desktop \
+              /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/
+            chmod 600 /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key
+            chmod 644 /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt
+            grdctl --system rdp disable
+            grdctl --system rdp set-tls-key \
+              /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key
+            grdctl --system rdp set-tls-cert \
+              /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt
+            grdctl --system rdp set-credentials marvin 'Marvin'
+            grdctl --system rdp enable
+            grdctl --system rdp disable-view-only
+            systemctl enable --now gnome-remote-desktop.service
+            grdctl --system status
 
-                # Configurate Gnome Desktop Default Login User:
-                sudo sed -i '/AutomaticLoginEnable/i\AutomaticLogin=marvin' /etc/gdm3/daemon.conf
-                sudo sed -i 's|AutomaticLoginEnable|#  AutomaticLoginEnable|g' /etc/gdm3/   daemon.conf
+            # Configurate Gnome Desktop Default Login User:
+            sudo sed -i '/AutomaticLoginEnable/i\AutomaticLogin=marvin' /etc/gdm3/daemon.conf
+            sudo sed -i 's|AutomaticLoginEnable|#  AutomaticLoginEnable|g' /etc/gdm3/daemon.conf
 
-                # Gnome Desktop RDP Permission Elevation
+            # Gnome Desktop RDP Permission Elevation
             cat <<'EOF' | sudo tee /etc/polkit-1/rules.d/10-shutdown-reboot.rules >/dev/null
 polkit.addRule(function(action, subject) {
     if (
@@ -110,23 +104,24 @@ polkit.addRule(function(action, subject) {
 });
 EOF
 
-                break
-                ;;
+            break
+            ;;
 
-            3)
-                echo "Optimization Completed..."
-                sleep 3
-                sudo systemctl reboot
-                ;;
+        3)
+            echo "Optimization Completed..."
+            sleep 3
+            sudo systemctl reboot
+            ;;
 
-            4)
-                echo "Back to Shell"
-                break
-                ;;
+        4)
+            echo "Back to Shell"
+            break
+            ;;
 
-            *)
-                echo "Invalid Input，Please input 1、2、3 or 4."
-                ;;
-        esac
-    done </dev/tty
+        *)
+            echo "Invalid Input，Please input 1、2、3 or 4."
+            ;;
+    esac
 done
+tty
+test -t 0 && echo "stdin 是终端" || echo "stdin 不是终端"
