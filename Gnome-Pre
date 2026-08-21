@@ -7,7 +7,7 @@ set -Eeuo pipefail
 apt update
 apt full-upgrade -y
 apt install -y --no-install-recommends gnome-core gnome-shell desktop-base \
-network-manager-gnome gnome-audio gnome-clocks gnome-shell-extension-manager gnome-remote-desktop pkexec gnome-shell-extension-user-theme gnome-shell-extension-system-monitor gnome-shell-extension-drive-menu gnome-shell-extension-places-menu gnome-shell-extension-prefs gnome-shell-extension-dashtodock gnome-keyring gnome-shell-extension-appindicator yaru-theme-gnome-shell gnome-shell-extension-kimpanel gnome-shell-extension-desktop-icons-ng
+network-manager-gnome gnome-audio gnome-clocks gnome-shell-extension-manager gnome-remote-desktop pkexec gnome-keyring-pkcs11 gnome-shell-extension-user-theme gnome-shell-extension-system-monitor gnome-shell-extension-drive-menu gnome-shell-extension-places-menu gnome-shell-extension-prefs gnome-shell-extension-dashtodock gnome-keyring gnome-shell-extension-appindicator yaru-theme-gnome-shell gnome-shell-extension-kimpanel gnome-shell-extension-desktop-icons-ng
 
 # Purge Obsoleted Packages, Temporary Files:
 apt remove -y gnome-contacts cheese gnome-snapshot simple-scan gnome-maps totem totem-common totem-plugins gnome-connections
@@ -18,3 +18,112 @@ sudo sed -i \
   -e '/^allow-hotplug/s/^/# /' \
   -e '/^iface/s/^/# /' \
   /etc/network/interfaces
+
+  # Remote Environment Selection:
+PS3="Please Select a Remote Control Environment:"
+
+options=(
+    "RealVNC"
+    "Gnome-Remote-Desktop"
+    "Reboot"
+    "Exit Script"
+)
+
+select choice in "${options[@]}"; do
+    case "$REPLY" in
+        1)
+            echo "Deploy VNC Environment..."
+
+            sudo apt install -y xorg xserver-xorg xserver-xorg-core gnome-session-xsession
+            wget -O /tmp/VNC-Server-6.11.0-Linux-x64.deb \
+    'https://raw.githubusercontent.com/vmvwv/realvnc/main/VNC-Server-6.11.0-Linux-x64.deb'
+            sudo apt install -y /tmp/VNC-Server-6.11.0-Linux-x64.deb
+            sudo vnclicense -add VKUPN-MTHHC-UDHGS-UWD76-6N36A
+            sudo systemctl enable vncserver-x11-serviced.service
+            sudo sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/daemon.conf
+            sudo tee /etc/gdm3/custom.conf > /dev/null <<'EOF'
+[daemon]
+WaylandEnable=false
+
+[security]
+
+[xdmcp]
+
+[greeter]
+
+[chooser]
+
+[debug]
+EOF
+
+            break
+            ;;
+
+        2)
+            echo "Deploy RDP Environmet..."
+
+            # Configurate Gnome Remote Desktop Environment:
+            systemctl daemon-reload
+            systemctl stop gnome-remote-desktop.service
+            sudo -u gnome-remote-desktop mkdir -p \
+              /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates
+            sudo -u gnome-remote-desktop openssl req -newkey rsa:2048 -nodes \
+              -keyout /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key \
+              -x509 -days 3650 \
+              -out /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt \
+              -subj "/C=CN/ST=HK/L=HK/O=Home/CN=debian"
+            sudo chown -R gnome-remote-desktop:gnome-remote-desktop \
+              /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/
+            sudo chmod 600 /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key
+            sudo chmod 644 /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt
+            sudo grdctl --system rdp disable
+            sudo grdctl --system rdp set-tls-key \
+              /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key
+            sudo grdctl --system rdp set-tls-cert \
+              /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt
+            sudo grdctl --system rdp set-credentials marvin 'Marvin'
+            sudo grdctl --system rdp enable
+            sudo grdctl --system rdp disable-view-only
+            sudo systemctl enable --now gnome-remote-desktop.service
+            sudo grdctl --system status
+
+            # Configurate Gnome Desktop Default Login User:
+            sudo sed -i '/AutomaticLoginEnable/i\AutomaticLogin=marvin' /etc/gdm3/daemon.conf
+            sudo sed -i 's|AutomaticLoginEnable|#  AutomaticLoginEnable|g' /etc/gdm3/rodaemon.conf
+
+            # Gnome Desktop RDP Permission Elevation
+            cat <<'EOF' | sudo tee /etc/polkit-1/rules.d/10-shutdown-reboot.rules >/dev/null
+polkit.addRule(function(action, subject) {
+    if (
+        (action.id == "org.freedesktop.login1.reboot" ||
+         action.id == "org.freedesktop.login1.reboot-multiple-sessions" ||
+         action.id == "org.freedesktop.login1.reboot-ignore-inhibit" ||
+         action.id == "org.freedesktop.login1.power-off" ||
+         action.id == "org.freedesktop.login1.power-off-multiple-sessions" ||
+         action.id == "org.freedesktop.login1.power-off-ignore-inhibit") &&
+        (subject.user == "marvin" || subject.isInGroup("sudo"))
+    ) {
+        return polkit.Result.YES;
+    }
+});
+EOF
+
+            break
+            ;;
+
+        3)
+            echo "Optimization Completed..."
+            sleep 3
+            sudo systemctl reboot
+            ;;
+
+        4)
+            echo "Back to Shell"
+            break
+            ;;
+
+        *)
+            echo "Invalid Input，Please input 1、2、3 or 4."
+            ;;
+    esac
+done </dev/tty
