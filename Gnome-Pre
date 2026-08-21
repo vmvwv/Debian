@@ -55,8 +55,6 @@ WaylandEnable=false
 
 [debug]
 EOF
-            sudo sed -i 's/^\(.*pam_gnome_keyring.*\)$/# \1/' /etc/pam.d/gdm-autologin
-            sudo sed -i 's/^\(.*pam_gnome_keyring.*\)$/# \1/' /etc/pam.d/gdm-password
 
             break
             ;;
