@@ -104,13 +104,6 @@ echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
 echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
 sudo firewall-cmd --permanent --add-masquerade
 
-# Add Rule of RDP Service to Firewall:
-sudo firewall-cmd --add-port=3389/tcp --permanent
-if systemctl cat vncserver-x11-serviced.service >/dev/null 2>&1; then
-            sudo firewall-cmd --zone=public --permanent --add-service=vncserver-x11-serviced
-            sudo firewall-cmd --reload
-fi
-
 # Configurate fcitx5 environment:
 pkill -x fcitx5 || true
 mkdir -p "$HOME/.config/fcitx5"
@@ -241,5 +234,12 @@ EOF
             ;;
     esac
 done </dev/tty
+
+# Add Rule of RDP Service to Firewall:
+sudo firewall-cmd --add-port=3389/tcp --permanent
+if systemctl cat vncserver-x11-serviced.service >/dev/null 2>&1; then
+            sudo firewall-cmd --zone=public --permanent --add-service=vncserver-x11-serviced
+            sudo firewall-cmd --reload
+fi
 
 history -c
