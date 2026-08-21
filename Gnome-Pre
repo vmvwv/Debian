@@ -1,7 +1,8 @@
-#!/bin/bash Gnome Setup Program
+#!/usr/bin/env bash
+#Gnome Setup Program
 #Copyright (c) 2026 By Marvin.W
 
-set -eu
+set -Eeuo pipefail
 
 apt update
 apt full-upgrade -y
@@ -11,9 +12,6 @@ network-manager-gnome gnome-audio gnome-clocks gnome-shell-extension-manager gno
 # Purge Obsoleted Packages, Temporary Files:
 apt remove -y gnome-contacts cheese gnome-snapshot simple-scan gnome-maps totem totem-common totem-plugins gnome-connections
 apt autoremove -y ; apt autoclean -y ; apt autopurge -y
-
-# Repair Network Missing When Updating to Gnome Desktop
-sed -i 'N;$!P;$!D;$d' /etc/network/interfaces
 
 # Remote Environment Selection:
 PS3="Please choose:"
@@ -125,4 +123,3 @@ EOF
             ;;
     esac
 done
-
