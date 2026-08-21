@@ -29,7 +29,6 @@ gnome-extensions enable dash-to-dock@micxgx.gmail.com
 gnome-extensions enable places-menu@gnome-shell-extensions.gcampax.github.com
 gnome-extensions enable ding@rastersoft.com
 gnome-extensions enable ubuntu-appindicators@ubuntu.com
-gnome-extensions enable kimpanel@kde.org
 gnome-extensions enable drive-menu@gnome-shell-extensions.gcampax.github.com
 gnome-extensions enable system-monitor@gnome-shell-extensions.gcampax.github.com
 gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
@@ -59,10 +58,6 @@ gsettings set org.gnome.nautilus.preferences show-hidden-files true
 gsettings set org.gnome.nautilus.preferences show-delete-permanently true
 gsettings set org.gnome.nautilus.window-state maximized true
 gsettings set org.gnome.nautilus.icon-view default-zoom-level 'medium'
-gsettings set org.gtk.Settings.FileChooser sort-directories-first true
-gsettings set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
-gsettings set org.gtk.Settings.FileChooser show-hidden true
-gsettings set org.gtk.gtk4.Settings.FileChooser show-hidden true
 
 gsettings set org.gnome.TextEditor show-grid true
 gsettings set org.gnome.TextEditor highlight-current-line true
@@ -92,20 +87,48 @@ gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/prof
 USER_NAME=($(ls -d /home/*/|cut -d/ -f3))
 
 sudo apt update
-sudo apt install -y --no-install-recommends vim expect firewalld \
-gnome-keyring-pkcs11 im-config fcitx5 fcitx5-chinese-addons fcitx5-config-qt fcitx5-frontend-gtk4 fcitx5-frontend-gtk3 fcitx5-frontend-gtk2 fonts-wqy-microhei fonts-wqy-zenhei libxss1 xdg-utils
+sudo apt install -y --no-install-recommends vim expect firewalld pkexec \
+gnome-keyring-pkcs11 gnome-shell-extension-kimpanel im-config fcitx5 fcitx5-chinese-addons fcitx5-config-qt fcitx5-frontend-gtk4 fcitx5-frontend-gtk3 fcitx5-frontend-gtk2 fonts-wqy-microhei fonts-wqy-zenhei libxss1 xdg-utils
 
 # Purge Obsoleted Kernels and Packages:
 sudo apt autopurge -y
 sudo apt autoremove -y
 
+# Restore Tailored Bash Environment:
+rm -f ~/.bashrc
+cp -f /etc/skel/.bashrc ~/
+
+# Configurate Gnome Remote Desktop Environment:
+sudo systemctl daemon-reload
+sudo systemctl stop gnome-remote-desktop.service
+sudo -u gnome-remote-desktop mkdir -p \
+  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates
+sudo -u gnome-remote-desktop openssl req -newkey rsa:2048 -nodes \
+  -keyout /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key \
+  -x509 -days 3650 \
+  -out /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt \
+  -subj "/C=CN/ST=HK/L=HK/O=Home/CN=debian"
+sudo chown -R gnome-remote-desktop:gnome-remote-desktop \
+  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/
+sudo chmod 600 /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key
+sudo chmod 644 /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt
+sudo grdctl --system rdp disable
+sudo grdctl --system rdp set-tls-key \
+  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.key
+sudo grdctl --system rdp set-tls-cert \
+  /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt
+sudo grdctl --system rdp set-credentials marvin 'Marvin'
+sudo grdctl --system rdp enable
+sudo grdctl --system rdp disable-view-only
+sudo systemctl enable --now gnome-remote-desktop.service
+sudo grdctl --system status
+sudo firewall-cmd --add-port=3389/tcp --permanent
+sudo sed -i 's|AutomaticLoginEnable|#  AutomaticLoginEnable|g' /etc/gdm3/daemon.conf
+
 # Enable IP Forwarding and Allow Permanent Firewall Masquerading:
 echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
 echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
 sudo firewall-cmd --permanent --add-masquerade
-
-# Add Rule of RDP Service to Firewall:
-sudo firewall-cmd --add-port=3389/tcp --permanent
 
 # Configurate fcitx5 environment:
 pkill -x fcitx5 || true
@@ -129,3 +152,18 @@ Layout=
 EOF
 
 history -c
+
+read -t 5 -p "Reboot Now？[Y/n]（Default: Yes; Other Input Will Stay the Main Script）: " ans
+case "${ans:-y}" in
+  [Yy]*|"")
+    echo "✅ System will reboot immediately"
+    sudo reboot
+    ;;
+  [Nn]*)
+    echo "❌ Pause Now"
+    exit 0
+    ;;
+  *)
+    echo "⚠️ Invalid Input, Continue..."
+    ;;
+esac
