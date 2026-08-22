@@ -1,4 +1,5 @@
-#!/bin/bash Debian Initiation Program
+#!/usr/bin/env bash
+#Debian Initiation Program
 #Copyright (c) 2026 By Marvin.W
 
 set -eu
@@ -45,6 +46,7 @@ HISTSIZE=-1
 HISTFILESIZE=-1
 alias ll='ls -ahls --color=auto'
 alias l='ls -ahls --color=auto'
+alias sudo='sudo '
 EOF
 
 if grep -q '^HISTSIZE=' /etc/skel/.bashrc; then
