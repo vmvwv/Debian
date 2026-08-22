@@ -6,10 +6,9 @@ set -Eeuo pipefail
 
 apt update
 apt full-upgrade -y
-apt install -y --no-install-recommends gnome-core gnome-shell \
-network-manager-gnome gnome-audio gnome-clocks gnome-keyring gnome-shell-extension-manager gnome-shell-extension-system-monitor gnome-shell-extension-dashtodock gnome-shell-extension-appindicator gnome-shell-extension-kimpanel gnome-shell-extension-desktop-icons-ng
-wget -O /tmp/desktop-base_13.0.4_all.deb 'https://snapshot.debian.org/archive/debian/20250831T144953Z/pool/main/d/desktop-base/desktop-base_13.0.4_all.deb'
-dpkg -y /tmp/desktop-base_13.0.4_all.deb
+apt install -y --no-install-recommends gnome-core gnome-shell desktop-base \
+network-manager-gnome gnome-audio gnome-clocks gnome-shell-extension-manager gnome-remote-desktop pkexec gnome-shell-extension-user-theme gnome-shell-extension-system-monitor gnome-shell-extension-drive-menu gnome-shell-extension-places-menu gnome-shell-extension-prefs gnome-shell-extension-dashtodock gnome-keyring gnome-shell-extension-appindicator yaru-theme-gnome-shell gnome-shell-extension-kimpanel gnome-shell-extension-desktop-icons-ng
+
 
 # Purge Obsoleted Packages, Temporary Files:
 apt remove -y gnome-contacts cheese gnome-snapshot simple-scan gnome-maps totem totem-common totem-plugins gnome-connections
