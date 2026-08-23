@@ -2,7 +2,7 @@
 # Debian Optimization Program
 # Copyright (c) 2026 By Marvin.W
 
-set -eu
+set -Eeuo pipefail
 
 # Debian Gnome Configuring:
 gsettings set org.gnome.Settings last-panel 'network'
@@ -20,6 +20,7 @@ gsettings set org.gnome.desktop.media-handling autorun-never true
 gsettings set org.gnome.desktop.interface enable-animations false
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 gsettings set org.gnome.desktop.interface enable-animations false
+gsettings set org.gnome.desktop.interface clock-format '24h'
 gsettings set org.gnome.desktop.datetime automatic-timezone true
 gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
 
@@ -93,7 +94,7 @@ USER_NAME=($(ls -d /home/*/|cut -d/ -f3))
 
 sudo apt update
 sudo apt install -y --no-install-recommends vim expect firewalld \
-gnome-keyring-pkcs11 im-config fcitx5 fcitx5-chinese-addons fcitx5-config-qt fcitx5-frontend-gtk4 fcitx5-frontend-gtk3 fcitx5-frontend-gtk2 fonts-wqy-microhei fonts-wqy-zenhei libxss1 xdg-utils
+seahorse gnome-keyring-pkcs11 im-config fcitx5 fcitx5-chinese-addons fcitx5-config-qt fcitx5-frontend-gtk4 fcitx5-frontend-gtk3 fcitx5-frontend-gtk2 fonts-wqy-microhei fonts-wqy-zenhei libxss1 xdg-utils
 
 # Purge Obsoleted Kernels and Packages:
 sudo apt autopurge -y
@@ -139,7 +140,7 @@ options=(
 select choice in "${options[@]}"; do
     case "$REPLY" in
         1)
-            echo "Deploy VNC Environment..."
+            echo "Deploy RealVNC Environment..."
 
             sudo apt install -y xorg xserver-xorg xserver-xorg-core gnome-session-xsession
             wget -O /tmp/VNC-Server-6.11.0-Linux-x64.deb \
@@ -162,16 +163,16 @@ WaylandEnable=false
 
 [debug]
 EOF
-
             break
             ;;
 
         2)
-            echo "Deploy RDP Environmet..."
+            echo "Deploy Gnome-Remote-Desktop Environmet..."
 
             # Configurate Gnome Remote Desktop Environment:
-            systemctl daemon-reload
-            systemctl stop gnome-remote-desktop.service
+            sudo apt install -y gnome-remote-desktop pkexec
+            sudo systemctl daemon-reload
+            sudo systemctl stop gnome-remote-desktop.service
             sudo -u gnome-remote-desktop mkdir -p \
               /var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop/certificates
             sudo -u gnome-remote-desktop openssl req -newkey rsa:2048 -nodes \
@@ -207,14 +208,79 @@ polkit.addRule(function(action, subject) {
          action.id == "org.freedesktop.login1.reboot-ignore-inhibit" ||
          action.id == "org.freedesktop.login1.power-off" ||
          action.id == "org.freedesktop.login1.power-off-multiple-sessions" ||
-         action.id == "org.freedesktop.login1.power-off-ignore-inhibit") &&
+         action.id == "org.freedesktop.login1.power-off-ignore-inhibit" ||
+         action.id == "org.freedesktop.login1.suspend" ||
+         action.id == "org.freedesktop.login1.suspend-multiple-sessions" ||
+         action.id == "org.freedesktop.login1.suspend-ignore-inhibit" ||
+         action.id == "org.freedesktop.login1.hibernate" ||
+         action.id == "org.freedesktop.login1.hibernate-multiple-sessions" ||
+         action.id == "org.freedesktop.login1.hibernate-ignore-inhibit" ||
+         action.id == "org.freedesktop.login1.hybrid-sleep" ||
+         action.id == "org.freedesktop.login1.hybrid-sleep-multiple-sessions" ||
+         action.id == "org.freedesktop.login1.hybrid-sleep-ignore-inhibit" ||
+         action.id == "org.freedesktop.NetworkManager.enable-disable-network" ||
+         action.id == "org.freedesktop.NetworkManager.settings.modify.system" ||
+         action.id == "org.freedesktop.NetworkManager.settings.modify.hostname" ||
+         action.id == "org.freedesktop.NetworkManager.settings.modify.global-dns" ||
+         action.id == "org.freedesktop.NetworkManager.checkpoint-rollback" ||
+         action.id == "org.freedesktop.NetworkManager.enable-disable-network" ||
+         action.id == "org.freedesktop.udisks2.filesystem-mount" ||
+         action.id == "org.freedesktop.udisks2.filesystem-mount-system" ||
+         action.id == "org.freedesktop.udisks2.filesystem-unmount" ||
+         action.id == "org.freedesktop.udisks2.filesystem-eject" ||
+         action.id == "org.freedesktop.udisks2.drive-eject" ||
+         action.id == "org.freedesktop.udisks2.drive-detach" ||
+         action.id == "org.freedesktop.udisks2.filesystem-mount" ||
+         action.id == "org.freedesktop.accounts.user-administration" ||
+         action.id == "org.freedesktop.accounts.change-user-data" ||
+         action.id == "org.freedesktop.accounts.modify-user" ||
+         action.id == "org.freedesktop.accounts.delete-user" ||
+         action.id == "org.freedesktop.timedated1.set-timezone" ||
+         action.id == "org.freedesktop.timedated1.set-time" ||
+         action.id == "org.freedesktop.timedated1.set-ntp" ||
+         action.id == "org.freedesktop.hostname1.set-hostname" ||
+         action.id == "org.freedesktop.hostname1.set-static-hostname" ||
+         action.id == "org.freedesktop.hostname1.set-product-uuid" ||
+         action.id == "org.freedesktop.localed.set-locale" ||
+         action.id == "org.freedesktop.systemd1.manage-units" ||
+         action.id == "org.freedesktop.systemd1.start-unit" ||
+         action.id == "org.freedesktop.systemd1.stop-unit" ||
+         action.id == "org.freedesktop.systemd1.restart-unit" ||
+         action.id == "org.freedesktop.systemd1.reload-unit" ||
+         action.id == "org.freedesktop.systemd1.enable-unit" ||
+         action.id == "org.freedesktop.systemd1.disable-unit" ||
+         action.id == "org.freedesktop.systemd1.mask-unit" ||
+         action.id == "org.freedesktop.systemd1.unmask-unit" ||
+         action.id == "org.freedesktop.systemd1.manage-units" ||
+         action.id == "org.freedesktop.packagekit.system-remove" ||
+         action.id == "org.freedesktop.packagekit.system-update" ||
+         action.id == "org.freedesktop.packagekit.system-repo-refresh" ||
+         action.id == "org.freedesktop.packagekit.system-install" ||
+         action.id == "org.freedesktop.packagekit.system-install-local" ||
+         action.id == "org.freedesktop.packagekit.system-sandbox-refresh" ||
+         action.id == "org.fedoraproject.firewalld.all" ||
+         action.id == "org.fedoraproject.firewalld.config" ||
+         action.id == "org.fedoraproject.firewalld.zone" ||
+         action.id == "org.fedoraproject.firewalld.service" ||
+         action.id == "org.fedoraproject.firewalld.port" ||
+         action.id == "org.fedoraproject.firewalld.masquerade" ||
+         action.id == "org.fedoraproject.firewalld.forward-port" ||
+         action.id == "org.fedoraproject.firewalld.icmp-block" ||
+         action.id == "org.fedoraproject.firewalld.source-port" ||
+         action.id == "org.libvirt.unix.manage" ||
+         action.id == "org.libvirt.unix.monitor" ||
+         action.id == "org.libvirt.unix.domain.stop" ||
+         action.id == "org.libvirt.unix.domain.delete" ||
+         action.id == "org.libvirt.unix.domain.start" ||
+         action.id == "org.libvirt.unix.network.create" ||
+         action.id == "org.libvirt.unix.network.delete" ||
+         action.id == "org.libvirt.unix.domain.create") &&
         (subject.user == "marvin" || subject.isInGroup("sudo"))
     ) {
         return polkit.Result.YES;
     }
 });
 EOF
-
             break
             ;;
 
@@ -236,10 +302,11 @@ EOF
 done </dev/tty
 
 # Add Rule of RDP Service to Firewall:
-sudo firewall-cmd --add-port=3389/tcp --permanent
-if systemctl cat vncserver-x11-serviced.service >/dev/null 2>&1; then
-            sudo firewall-cmd --zone=public --permanent --add-service=vncserver-x11-serviced
-            sudo firewall-cmd --reload
+if systemctl list-unit-files --quiet vncserver-x11-serviced.service 2>/dev/null; then
+    sudo firewall-cmd --zone=public --permanent --add-service=vncserver-x11-serviced
+    sudo firewall-cmd --add-port=3389/tcp --permanent
+    sudo firewall-cmd --reload
+elif systemctl list-unit-files --quiet gnome-remote-desktop.service 2>/dev/null; then
+    sudo firewall-cmd --zone=public  --permanent --add-service=rdp
+    sudo firewall-cmd --reload
 fi
-
-history -c
