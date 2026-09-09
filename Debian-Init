@@ -2,7 +2,7 @@
 #Debian Initiation Program
 #Copyright (c) 2026 By Marvin.W
 
-set -eu
+set -Eeuo pipefail
 
 # Update Kernel:
 sed -i 's#http://deb.debian.org#http://mirrors.huaweicloud.com#g' /etc/apt/sources.list
