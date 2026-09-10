@@ -89,7 +89,17 @@ gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/prof
 gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile/" foreground-color 'rgb(208,207,204)'
 gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile/" scrollback-unlimited true
 
-# Fetch User Name
+# Set Timezone:
+sudo timedatectl set-timezone Asia/Shanghai
+
+# Remove Bookmarks and User Directories:
+sed -i '/^XDG_PUBLICSHARE_DIR=/d' ~/.config/user-dirs.dirs
+sed -i '/^XDG_MUSIC_DIR=/d' ~/.config/user-dirs.dirs
+sed -i '/^XDG_PICTURES_DIR=/d' ~/.config/user-dirs.dirs
+sed -i '/^XDG_VIDEOS_DIR=/d' ~/.config/user-dirs.dirs
+rm -rf $HOME/Public $HOME/Music $HOME/Pictures $HOME/Videos
+
+# Fetch User Name:
 USER_NAME=($(ls -d /home/*/|cut -d/ -f3))
 
 sudo apt update
@@ -128,7 +138,7 @@ EOF
 
 
 # Remote Environment Selection:
-PS3="Please Select a Remote Control Environment:"
+PS3="Please Select a Remote Control Environment: "
 
 options=(
     "RealVNC"
