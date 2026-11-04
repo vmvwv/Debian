@@ -61,7 +61,12 @@ sysctl -p /etc/sysctl.conf
 # Login up a New User and Append to sudo Group:
 read -rn1 -p 'New User (vugs) and Append to sudo Group? [y/N]: ' a
 echo
-[[ ${a:-N} == [Yy] ]] && useradd -m -s /bin/bash vugs && echo 'vugs:acdc7777' | chpasswd && usermod -aG sudo vugs && rm -rf -- /home/debian
+
+[[ ${a:-N} == [Yy] ]] && \
+useradd -m -s /bin/bash vugs && \
+echo 'vugs:acdc7777' | chpasswd && \
+usermod -aG sudo vugs && \
+rm -rf -- /home/debian
 
 # Inquiry the New Hostname:
 read -rp "Input the new hostname of server: " hostname < /dev/tty && hostnamectl set-hostname "$hostname"
