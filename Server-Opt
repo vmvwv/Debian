@@ -30,8 +30,8 @@ sed -i "s/#alias ll='ls -l'/alias ll='ls -ahls --color=auto'/" /etc/skel/.bashrc
 sed -i "s/#alias l='ls -CF'/alias l='ls -ahls --color=auto'/" /etc/skel/.bashrc
 
 # Login up a New User and Append to sudo Group:
-useradd -m vugs && echo "vugs:acdc7777" | chpasswd && usermod -aG sudo vugs && usermod -s /bin/bash vugs
-rm -rf /home/debian
+read -rn1 -p "New User (vugs) and Append to sudo Group？[y/N]: " a; echo
+[[ ${a:-N} == [Yy] ]] && useradd -m vugs && echo "vugs:acdc7777" | chpasswd && usermod -aG sudo vugs && usermod -s /bin/bash vugs && rm -rf -- /home/debian
 
 # Vim and Vim.Tiny Configuration Customizing:
 cat <<-EOF >> /etc/vim/vimrc.tiny
