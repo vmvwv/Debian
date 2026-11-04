@@ -59,17 +59,12 @@ EOF
 sysctl -p /etc/sysctl.conf
 
 # Login up a New User and Append to sudo Group:
-read -rn1 -p 'New User (vugs) and Append to sudo Group? [y/N]: ' a
+read -rn1 -p 'New User (vugs) and Append to sudo Group? [y/N]: ' a </dev/tty
 echo
-
-[[ ${a:-N} == [Yy] ]] && \
-useradd -m -s /bin/bash vugs && \
-echo 'vugs:acdc7777' | chpasswd && \
-usermod -aG sudo vugs && \
-rm -rf -- /home/debian
+[[ ${a:-N} == [Yy] ]] && useradd -m -s /bin/bash vugs && echo 'vugs:acdc7777' | chpasswd && usermod -aG sudo vugs && rm -rf -- /home/debian
 
 # Inquiry the New Hostname:
-read -rp "Input the new hostname of server: " hostname < /dev/tty && hostnamectl set-hostname "$hostname"
+read -rp 'Input the new hostname of server: ' NEW_HOSTNAME < /dev/tty && hostnamectl set-hostname "$NEW_HOSTNAME"
 
 # Purge Obsoleted Packages, Temporary Files:
 apt autoremove -y ; apt autoclean -y ; apt autopurge -y
