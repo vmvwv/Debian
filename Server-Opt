@@ -2,7 +2,7 @@
 # Customized Server Has Tailored by Marvin.W
 # Copyright (c) 2026 By Marvin.W
 
-set -eu
+set -euo pipefail
 
 # Configurate Bash Environment:
 cat >> /etc/bash.bashrc <<'EOF'
@@ -28,10 +28,6 @@ fi
 
 sed -i "s/#alias ll='ls -l'/alias ll='ls -ahls --color=auto'/" /etc/skel/.bashrc
 sed -i "s/#alias l='ls -CF'/alias l='ls -ahls --color=auto'/" /etc/skel/.bashrc
-
-# Login up a New User and Append to sudo Group:
-read -rn1 -p "New User (vugs) and Append to sudo Group？[y/N]: " a; echo
-[[ ${a:-N} == [Yy] ]] && useradd -m vugs && echo "vugs:acdc7777" | chpasswd && usermod -aG sudo vugs && usermod -s /bin/bash vugs && rm -rf -- /home/debian
 
 # Vim and Vim.Tiny Configuration Customizing:
 cat <<-EOF >> /etc/vim/vimrc.tiny
@@ -62,11 +58,16 @@ net.ipv6.conf.all.forwarding = 1
 EOF
 sysctl -p /etc/sysctl.conf
 
-# Purge Obsoleted Packages, Temporary Files:
-apt autoremove -y ; apt autoclean -y ; apt autopurge -y
+# Login up a New User and Append to sudo Group:
+read -rn1 -p 'New User (vugs) and Append to sudo Group? [y/N]: ' a
+echo
+[[ ${a:-N} == [Yy] ]] && useradd -m -s /bin/bash vugs && echo 'vugs:acdc7777' | chpasswd && usermod -aG sudo vugs && rm -rf -- /home/debian
 
 # Inquiry the New Hostname:
 read -rp "Input the new hostname of server: " hostname < /dev/tty && hostnamectl set-hostname "$hostname"
+
+# Purge Obsoleted Packages, Temporary Files:
+apt autoremove -y ; apt autoclean -y ; apt autopurge -y
 
 rm -rf Server-Customize
 history -c
